@@ -36,11 +36,22 @@ jobs:
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
 
+      - name: Save docker-compose.yml
+        uses: actions/upload-artifact@v2
+        with:
+            name: docker-compose
+            path: docker-compose.yml
+
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     steps:
+      - name: Download docker-compose.yml
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-compose
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -54,18 +65,22 @@ jobs:
             mkdir -p ~/app 
             cd ~/app
             
-            echo "${{ secrets.DOCKER_COMPOSE_YML }}" > docker-compose.yml
+            echo "${{ secrets.SSH_KEY }}" > private_key.pem
+            chmod 600 private_key.pem
+            scp -i private_key.pem -o StrictHostKeyChecking=no $GITHUB_WORKSPACE/docker-compose.yml ubuntu@${{ secrets.EC2_HOST }}:~/app/
+            rm private_key.pem
             
             sudo chown -R ubuntu:ubuntu ~/app
             
+            cat << EOF > .env
+            DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            EOF
+            
             docker-compose down
-            
-            docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-            
-            echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
-            
             docker-compose up -d
-            
             docker image prune -af
             
             echo "Deployment completed at $(date)"
