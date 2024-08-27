@@ -50,15 +50,28 @@ jobs:
           script: |
             set -e
             echo "Deployment started at $(date)"
-            mkdir -p ~/app 
+            mkdir -p ~/app
             cd ~/app
+            
+            # docker-compose.yml 파일 생성
             echo "${{ secrets.DOCKER_COMPOSE_YML }}" > docker-compose.yml
-            cat << EOF > .env
-            DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-            EOF
+            
+            # .env 파일 생성
+            echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
+            
+            # 환경 변수 치환
+            envsubst < docker-compose.yml > docker-compose.tmp.yml && mv docker-compose.tmp.yml docker-compose.yml
+            
+            # 디버깅을 위한 출력
+            echo "docker-compose.yml contents:"
+            cat docker-compose.yml
+            echo ".env contents:"
+            cat .env
+            
             sudo chown -R ubuntu:ubuntu ~/app
             docker-compose down
             docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
             docker-compose up -d
             docker image prune -af
+            
             echo "Deployment completed at $(date)"
