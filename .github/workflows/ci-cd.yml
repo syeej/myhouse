@@ -56,7 +56,9 @@ jobs:
             sudo chown -R ubuntu:ubuntu ~/app
             docker-compose down
             docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-            echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
+            cat << EOF > .env
+            DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+            EOF
             docker-compose up -d
             docker image prune -af
             echo "Deployment completed at $(date)"
