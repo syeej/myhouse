@@ -1,8 +1,8 @@
-name: Continuous Deployment
+name: MyHouse CD
 
 on:
   workflow_run:
-    workflows: ["Continuous Integration"]
+    workflows: ["MyHouse CI"]
     types:
       - completed
 
