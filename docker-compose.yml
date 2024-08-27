@@ -3,7 +3,6 @@ version: '3.8'
 services:
   app:
     image: ${DOCKER_IMAGE}
-    # build: .
     ports:
       - "8087:8087"
     environment:
