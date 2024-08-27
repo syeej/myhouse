@@ -1,0 +1,27 @@
+name: Continuous Deployment
+
+on:
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: DOCKER_IMAGE_NAME,GITHUB_SHA
+          script: |
+            cd ~/app
+            docker-compose down
+            docker pull $DOCKER_IMAGE_NAME:$GITHUB_SHA
+            echo "DOCKER_IMAGE=$DOCKER_IMAGE_NAME:$GITHUB_SHA" > .env
+            docker-compose up -d
+            docker image prune -af
