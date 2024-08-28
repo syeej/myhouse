@@ -68,6 +68,10 @@ jobs:
             cat docker-compose.yml
             echo "=================================================="
             
+            echo "==== Debugging: Environment Variables ===="
+            env | grep DOCKER
+            echo "=========================================="
+            
             echo "==== Debugging: Docker Compose config ===="
             docker-compose --env-file .env config
             echo "=========================================="
