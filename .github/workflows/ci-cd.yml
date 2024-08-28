@@ -52,16 +52,13 @@ jobs:
             echo "Deployment started at $(date)"
             mkdir -p ~/app 
             cd ~/app
-
             echo "DOCKER_IMAGE=\"${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}\"" > .env
-            echo "Content of .env file:"
-            cat .env
             echo "${{ secrets.DOCKER_COMPOSE_YML }}" > docker-compose.yml
             sudo chown -R ubuntu:ubuntu ~/app
             
-            docker-compose down
+            docker-compose --env-file .env down
             docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
             
-            docker-compose up -d
+            docker-compose --env-file .env up -d
             docker image prune -af
             echo "Deployment completed at $(date)"
