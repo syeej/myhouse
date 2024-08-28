@@ -43,22 +43,18 @@ jobs:
     steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
-        env:
-          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: DOCKER_IMAGE
           script: |
             set -e
             echo "Deployment started at $(date)"
             mkdir -p ~/app 
             cd ~/app
 
-            echo "DOCKER_IMAGE=${DOCKER_IMAGE}" > .env
+            echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
             sudo chown -R ubuntu:ubuntu ~/app
-            export DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
             
             echo "==== Debugging: Content of .env file ===="
             cat .env
