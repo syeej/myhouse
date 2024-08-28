@@ -43,10 +43,13 @@ jobs:
     steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
+        env:
+          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: DOCKER_IMAGE
           script: |
             set -e
             echo "Deployment started at $(date)"
@@ -56,20 +59,8 @@ jobs:
             echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
             sudo chown -R ubuntu:ubuntu ~/app
             
-            echo "==== Debugging: Content of .env file ===="
-            cat .env
-            echo "========================================="
-                        
-            echo "==== Debugging: Content of docker-compose.yml ===="
-            cat docker-compose.yml
-            echo "=================================================="
-            
-            echo "==== Debugging: Environment Variables ===="
-            env | grep DOCKER
-            echo "=========================================="
-            
             echo "==== Debugging: Docker Compose config ===="
-            docker-compose --env-file .env config
+            DOCKER_IMAGE=${DOCKER_IMAGE} docker-compose config
             echo "=========================================="
             
             echo "docker-compose --env-file .env down start"
