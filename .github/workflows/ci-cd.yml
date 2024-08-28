@@ -56,15 +56,15 @@ jobs:
             mkdir -p ~/app 
             cd ~/app
 
-            echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
+            echo "DOCKER_IMAGE=${DOCKER_IMAGE}" > .env
             sudo chown -R ubuntu:ubuntu ~/app
             echo "DOCKER_IMAGE value: ${DOCKER_IMAGE}"
-      
-            docker-compose --env-file <(echo "DOCKER_IMAGE=${DOCKER_IMAGE}") down
+          
+            docker-compose --env-file .env down
             
             docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
             
-            docker-compose --env-file <(echo "DOCKER_IMAGE=${DOCKER_IMAGE}") up -d
+            docker-compose --env-file .env up -d
             
             docker image prune -af
             echo "Deployment completed at $(date)"
