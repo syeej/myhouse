@@ -45,26 +45,21 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          DOCKER_COMPOSE_YML: ${{ secrets.DOCKER_COMPOSE_YML }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: DOCKER_IMAGE
+          envs: DOCKER_IMAGE,DOCKER_COMPOSE_YML
           script: |
             set -e
             echo "Deployment started at $(date)"
             mkdir -p ~/app 
             cd ~/app
-
+            echo "$DOCKER_COMPOSE_YML" > docker-compose.yml
             echo "DOCKER_IMAGE=${DOCKER_IMAGE}" > .env
-            sudo chown -R ubuntu:ubuntu ~/app
-            echo "DOCKER_IMAGE value: ${DOCKER_IMAGE}"
-            
             docker-compose --env-file .env down
-            
             docker pull ${DOCKER_IMAGE}
-            
             docker-compose --env-file .env up -d
-            
             docker image prune -af
             echo "Deployment completed at $(date)"
