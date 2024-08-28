@@ -54,6 +54,8 @@ jobs:
             cd ~/app
 
             echo "DOCKER_IMAGE=\"${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}\"" > .env
+            echo "Content of .env file:"
+            cat .env
             echo "${{ secrets.DOCKER_COMPOSE_YML }}" > docker-compose.yml
             sudo chown -R ubuntu:ubuntu ~/app
             
