@@ -71,12 +71,8 @@ jobs:
             env | grep DOCKER
             echo "=========================================="
             
-            echo "==== Debugging: Docker Compose config ===="
-            docker-compose --env-file <(echo "DOCKER_IMAGE=${DOCKER_IMAGE}") config
-            echo "=========================================="
-            
             echo "docker-compose --env-file .env down start"
-            docker-compose --env-file .env down
+            docker-compose --env-file <(echo "DOCKER_IMAGE=${DOCKER_IMAGE}") down
             echo "docker-compose --env-file .env down end"
             
             echo "docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }} start"
@@ -84,7 +80,7 @@ jobs:
             echo "docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }} end"
             
             echo "docker-compose --env-file .env up -d start"
-            docker-compose --env-file .env up -d
+            docker-compose --env-file <(echo "DOCKER_IMAGE=${DOCKER_IMAGE}") up -d
             echo "docker-compose --env-file .env up -d end"
             
             docker image prune -af
