@@ -72,7 +72,7 @@ jobs:
             echo "=========================================="
             
             echo "==== Debugging: Docker Compose config ===="
-            DOCKER_IMAGE=${DOCKER_IMAGE} docker-compose config
+            docker-compose --env-file <(echo "DOCKER_IMAGE=${DOCKER_IMAGE}") config
             echo "=========================================="
             
             echo "docker-compose --env-file .env down start"
