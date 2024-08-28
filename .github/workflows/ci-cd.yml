@@ -59,29 +59,12 @@ jobs:
             echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
             sudo chown -R ubuntu:ubuntu ~/app
             echo "DOCKER_IMAGE value: ${DOCKER_IMAGE}"
-            echo "==== Debugging: Content of .env file ===="
-            cat .env
-            echo "========================================="
-                        
-            echo "==== Debugging: Content of docker-compose.yml ===="
-            cat docker-compose.yml
-            echo "=================================================="
-            
-            echo "==== Debugging: Environment Variables ===="
-            env | grep DOCKER
-            echo "=========================================="
-            
-            echo "docker-compose --env-file .env down start"
+      
             docker-compose --env-file <(echo "DOCKER_IMAGE=${DOCKER_IMAGE}") down
-            echo "docker-compose --env-file .env down end"
             
-            echo "docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }} start"
             docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-            echo "docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }} end"
             
-            echo "docker-compose --env-file .env up -d start"
             docker-compose --env-file <(echo "DOCKER_IMAGE=${DOCKER_IMAGE}") up -d
-            echo "docker-compose --env-file .env up -d end"
             
             docker image prune -af
             echo "Deployment completed at $(date)"
