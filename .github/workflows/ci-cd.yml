@@ -54,43 +54,33 @@ jobs:
             echo "Deployment started at $(date)"
             mkdir -p ~/app 
             cd ~/app
-            
-            # .env 파일에 DOCKER_IMAGE 변수 직접 저장
-            # 프로세스 치환(<(...)) 대신 파일을 사용하여 호환성 문제 해결
+          
             echo "DOCKER_IMAGE=${DOCKER_IMAGE}" > .env
             sudo chown -R ubuntu:ubuntu ~/app
             echo "DOCKER_IMAGE value: ${DOCKER_IMAGE}"
-            
-            # 디버깅을 위한 .env 파일 내용 출력
+
             echo "==== Debugging: Content of .env file ===="
             cat .env
             echo "========================================="
-            
-            # 디버깅을 위한 docker-compose.yml 파일 내용 출력
+
             echo "==== Debugging: Content of docker-compose.yml ===="
             cat docker-compose.yml
             echo "=================================================="
-            
-            # 디버깅을 위한 환경 변수 출력
+
             echo "==== Debugging: Environment Variables ===="
             env | grep DOCKER
             echo "=========================================="
-            
-            # docker-compose down 명령 실행 (프로세스 치환 제거)
             echo "docker-compose down start"
             docker-compose --env-file .env down
             echo "docker-compose down end"
             
-            # docker pull 명령 실행 (환경 변수 사용)
             echo "docker pull ${DOCKER_IMAGE} start"
             docker pull ${DOCKER_IMAGE}
             echo "docker pull ${DOCKER_IMAGE} end"
-            
-            # docker-compose up 명령 실행 (프로세스 치환 제거)
+          
             echo "docker-compose up -d start"
             docker-compose --env-file .env up -d
             echo "docker-compose up -d end"
-            
-            # 사용하지 않는 Docker 이미지 정리
+
             docker image prune -af
             echo "Deployment completed at $(date)"
