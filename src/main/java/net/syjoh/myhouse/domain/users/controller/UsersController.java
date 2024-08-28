@@ -14,4 +14,9 @@ public class UsersController {
         String result = "hello";
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/hi")
+    public ResponseEntity<?> checkStatus2(){
+        String result = "hi";
+        return ResponseEntity.ok(result);
+    }
 }
