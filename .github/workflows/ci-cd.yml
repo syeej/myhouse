@@ -56,10 +56,14 @@ jobs:
             echo "Deployment started at $(date)"
             mkdir -p ~/app 
             cd ~/app
-            echo "$DOCKER_COMPOSE_YML" > docker-compose.yml
-            echo "DOCKER_IMAGE=${DOCKER_IMAGE}" > .env
-            docker-compose --env-file .env down
-            docker pull ${DOCKER_IMAGE}
-            docker-compose --env-file .env up -d
+            
+            sudo chown -R ubuntu:ubuntu ~/app
+        
+            docker-compose down
+            
+            docker pull ${{ secrets.DOCKER_IMAGE_NAME }}
+            
+            docker-compose up -d
+          
             docker image prune -af
             echo "Deployment completed at $(date)"
