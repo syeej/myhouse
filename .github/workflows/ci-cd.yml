@@ -58,6 +58,18 @@ jobs:
 
             echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
             sudo chown -R ubuntu:ubuntu ~/app
+            echo "DOCKER_IMAGE value: ${DOCKER_IMAGE}"
+            echo "==== Debugging: Content of .env file ===="
+            cat .env
+            echo "========================================="
+                        
+            echo "==== Debugging: Content of docker-compose.yml ===="
+            cat docker-compose.yml
+            echo "=================================================="
+            
+            echo "==== Debugging: Environment Variables ===="
+            env | grep DOCKER
+            echo "=========================================="
             
             echo "==== Debugging: Docker Compose config ===="
             DOCKER_IMAGE=${DOCKER_IMAGE} docker-compose config
