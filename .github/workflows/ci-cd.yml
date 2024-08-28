@@ -54,14 +54,12 @@ jobs:
             cd ~/app
 
             echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
-            echo "${{ secrets.DOCKER_COMPOSE_YML }}" | sed "s|\${DOCKER_IMAGE}|${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}|g" > docker-compose.yml
+            echo "${{ secrets.DOCKER_COMPOSE_YML }}" | envsubst > docker-compose.yml
             sudo chown -R ubuntu:ubuntu ~/app
             
             echo "==== Debugging: Content of .env file ===="
             cat .env
             echo "========================================="
-            
-            sed -i 's|${DOCKER_IMAGE}|'"${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}"'|g' docker-compose.yml
                         
             echo "==== Debugging: Content of docker-compose.yml ===="
             cat docker-compose.yml
