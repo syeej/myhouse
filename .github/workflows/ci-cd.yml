@@ -57,6 +57,10 @@ jobs:
             echo "${{ secrets.DOCKER_COMPOSE_YML }}" | sed "s|\${DOCKER_IMAGE}|${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}|g" > docker-compose.yml
             sudo chown -R ubuntu:ubuntu ~/app
             
+            echo "==== Debugging: Docker Compose config ===="
+            docker-compose --env-file .env config
+            echo "=========================================="
+            
             echo "docker-compose --env-file .env down start"
             docker-compose --env-file .env down
             echo "docker-compose --env-file .env down end"
