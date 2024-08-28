@@ -54,7 +54,7 @@ jobs:
             cd ~/app
 
             echo "DOCKER_IMAGE=${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}" > .env
-            echo "${{ secrets.DOCKER_COMPOSE_YML }}" | envsubst > docker-compose.yml
+            export DOCKER_IMAGE=$(grep DOCKER_IMAGE .env | cut -d '=' -f2)
             sudo chown -R ubuntu:ubuntu ~/app
             
             echo "==== Debugging: Content of .env file ===="
