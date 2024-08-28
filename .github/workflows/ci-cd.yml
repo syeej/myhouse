@@ -65,10 +65,7 @@ jobs:
             cat docker-compose.yml
             echo "=================================================="
             
-            echo "==== Debugging: Expand variables in docker-compose.yml ===="
-            envsubst < docker-compose.yml > docker-compose-expanded.yml
-            cat docker-compose-expanded.yml
-            echo "========================================================="
+            sed -i 's|${DOCKER_IMAGE}|'"${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}"'|g' docker-compose.yml
             
             echo "==== Debugging: Docker Compose config ===="
             docker-compose --env-file .env config
