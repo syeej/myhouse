@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew build -x test
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }} .
+        run: docker build -t ${{ secrets.DOCKER_IMAGE_NAME }}:latest .
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -34,7 +34,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+        run: docker push ${{ secrets.DOCKER_IMAGE_NAME }}:latest
 
   deploy:
     needs: build-and-test
@@ -44,7 +44,7 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         env:
-          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE_NAME }}:latest
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
@@ -59,10 +59,10 @@ jobs:
             echo "DOCKER_IMAGE=${DOCKER_IMAGE}" > .env
             sudo chown -R ubuntu:ubuntu ~/app
             echo "DOCKER_IMAGE value: ${DOCKER_IMAGE}"
-          
+            
             docker-compose --env-file .env down
             
-            docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+            docker pull ${DOCKER_IMAGE}
             
             docker-compose --env-file .env up -d
             
