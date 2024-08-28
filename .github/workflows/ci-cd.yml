@@ -60,12 +60,12 @@ jobs:
             echo "==== Debugging: Content of .env file ===="
             cat .env
             echo "========================================="
+            
+            sed -i 's|${DOCKER_IMAGE}|'"${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}"'|g' docker-compose.yml
                         
             echo "==== Debugging: Content of docker-compose.yml ===="
             cat docker-compose.yml
             echo "=================================================="
-            
-            sed -i 's|${DOCKER_IMAGE}|'"${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}"'|g' docker-compose.yml
             
             echo "==== Debugging: Docker Compose config ===="
             docker-compose --env-file .env config
